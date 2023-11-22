@@ -3,7 +3,7 @@
 from models.base_model import Base, BaseModel
 from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.orm import relationship
-
+from models.city import City
 
 class State(BaseModel, Base):
     """ State class """
@@ -13,6 +13,7 @@ class State(BaseModel, Base):
 
     @property
     def cities(self):
+        from models import storage
         """Get a list of all related City objects."""
         city_list = []
         for city in list(storage.all(City).values()):
