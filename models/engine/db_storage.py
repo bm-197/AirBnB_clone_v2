@@ -41,12 +41,19 @@ class DBStorage:
         return {"{}.{}".format(type(o).__name__, o.id): o for o in objs}
     
     def new(self, obj):
-        """add the object to the current database session"""
-        self.__session.add(obj)
+        '''adds the obj to the current db session'''
+        if obj is not None:
+            try:
+                self.__session.add(obj)
+                self.__session.flush()
+                self.__session.refresh(obj)
+            except Exception as ex:
+                self.__session.rollback()
+                raise ex
     
     def save(self, obj=None):
         """Commit all changes of the current database session."""
-        self.__session.commit(obj)
+        self.__session.commit()
     
     def delete(self, obj=None):
         """Delete obj from the current database session."""
