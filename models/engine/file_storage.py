@@ -13,7 +13,7 @@ class FileStorage:
         if cls is not None:
             cls_objects = {}
             for k, v in self.__objects.items():
-                cls_objects.update({k: V})
+                cls_objects.update({k: v})
             return cls_objects
         else:
             return FileStorage.__objects
