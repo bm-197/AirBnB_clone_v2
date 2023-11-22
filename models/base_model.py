@@ -50,6 +50,8 @@ class BaseModel:
         for key, value in dict_rep.items():
             if key == "updated_at" or key == "created_at":
                 dict_rep[key] = value.isoformat(timespec="microseconds")
+            if key == '_sa_instance_state':
+                del(dict_rep['_sa_instance_state'])
         return dict_rep
     
     def delete(self):
