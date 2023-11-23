@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 """ Console Module """
+import re
+import os
+import uuid
 import cmd
+from datetime import datetime
 import sys
 from models.base_model import BaseModel
 from models.__init__ import storage
@@ -113,34 +117,41 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, args):
-        """ Create a new class instance with given keys/values and print its id."""
-        my_list = args.split(" ")
+    def do_create(self, line):
+        """Usage: create <class> <key 1>=<value 2> <key 2>=<value 2> ...
+        Create a new class instance with given keys/values and print its id.
+        """
+        try:
+            if not line:
+                raise SyntaxError()
+            my_list = line.split(" ")
 
-        if not args:
-            print("** class name missing **")
-            return
-        
-        elif my_list[0] not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        kwargs = {}
-        for i in range(1, len(my_list)):
-            key, value = tuple(my_list[i].split("="))
-            if value[0] == '"':
-                value = value.strip('"').replace("_", " ")
-            kwargs[key] =  value
+            kwargs = {}
+            for i in range(1, len(my_list)):
+                key, value = tuple(my_list[i].split("="))
+                if value[0] == '"':
+                    value = value.strip('"').replace("_", " ")
+                else:
+                    try:
+                        value = eval(value)
+                    except (SyntaxError, NameError):
+                        continue
+                kwargs[key] = value
 
             if kwargs == {}:
-                new_instance = HBNBCommand.classes[my_list[0]]()
+                obj = eval(my_list[0])()
             else:
-                new_instance = eval(my_list[0])(**kwargs)        
-        new_instance = HBNBCommand.classes[my_list[0]]()
-        storage.new(new_instance)
-        for k, v in kwargs.items():
-            new_instance.__dict__.update({k:v})
-        print(new_instance.id)
-        new_instance.save()
+                if os.getenv('HBNB_TYPE_STORAGE') == 'db':
+                    if not hasattr(kwargs, 'id'):
+                        kwargs['id'] = str(uuid.uuid4())
+                obj = HBNBCommand.classes[my_list[0]](**kwargs)
+            obj.save()
+            print(obj.id)
+
+        except SyntaxError:
+            print("** class name missing **")
+        except NameError:
+            print("** class doesn't exist **")
 
     def help_create(self):
         """ Help information for the create method """
@@ -222,11 +233,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 print_list.append(str(v))
 
         print(print_list)
