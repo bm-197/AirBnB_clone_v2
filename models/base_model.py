@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """This module defines a base class for all models in our hbnb clone"""
 import models
+from os import getenv
 import uuid
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
@@ -25,8 +26,9 @@ class BaseModel:
             
         else:
             for key, value in kwargs.items():
-            #    if key == "created_at" or key == "updated_at":
-            #        value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                if getenv('HBNB_TYPE_STORAGE') == 'file':
+                    if key == "created_at" or key == "updated_at":
+                        value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
                 if key != "__class__":
                     setattr(self, key, value)
 
@@ -47,7 +49,7 @@ class BaseModel:
         attributes and iso formatted date-time"""
         dict_rep = vars(self)
         dict_rep["__class__"] = self.__class__.__name__
-        for key, value in dict_rep.items():
+        for key, value in dict_rep.copy().items():
             if key == "updated_at" or key == "created_at":
                 dict_rep[key] = value.isoformat(timespec="microseconds")
             if key == '_sa_instance_state':
