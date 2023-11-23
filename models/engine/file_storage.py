@@ -12,8 +12,9 @@ class FileStorage:
         """Returns a dictionary of models currently in storage"""
         if cls is not None:
             cls_objects = {}
-            for k, v in self.__objects.items():
-                cls_objects.update({k: v})
+            for k, v in FileStorage.__objects.items():
+                if k.startswith(cls.__name__):
+                    cls_objects.update({k: v})
             return cls_objects
         else:
             return FileStorage.__objects
@@ -56,6 +57,9 @@ class FileStorage:
             pass
     
     def delete(self, obj=None):
-        """Deletes the obj if in __objects"""
+        """Deletes the object obj if obj is in __objects"""
         if obj is not None:
-            del self.__objects["{}.{}".format(type(obj).__name__, obj.id)]
+            for k, v in FileStorage.__objects.items():
+                if v is obj:
+                    tmp = k
+            FileStorage.__objects.pop(tmp)
