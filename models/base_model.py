@@ -17,6 +17,7 @@ class BaseModel:
     updated_at = Column(DateTime, nullable=False, default=(datetime.now()))
     """A base class for all hbnb models"""
     def __init__(self, *args, **kwargs):
+        id = Column(String(60), primary_key=True, nullable=False)
         """Instatntiates a new model"""
         if not kwargs:
             from models import storage
