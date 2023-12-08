@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """This module defines a base class for all models in our hbnb clone"""
 import models
-from os import getenv
 import uuid
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
@@ -11,13 +10,12 @@ Base = declarative_base()
 
 
 class BaseModel:
-    id = Column(String(60), primary_key=True, nullable=False)
-    format_str = '%Y-%m-%d %H:%M:%S.%f'
-    created_at = Column(DateTime, nullable=False, default=(datetime.now()))
-    updated_at = Column(DateTime, nullable=False, default=(datetime.now()))
     """A base class for all hbnb models"""
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
+        id = Column(String(60), primary_key=True, nullable=False)
+        created_at = Column(DateTime, nullable=False, default=datetime.now())
+        updated_at = Column(DateTime, nullable=False, default=datetime.now())
         if not kwargs:
             from models import storage
             self.id = str(uuid.uuid4())
@@ -26,9 +24,8 @@ class BaseModel:
             
         else:
             for key, value in kwargs.items():
-                if getenv('HBNB_TYPE_STORAGE') == 'file':
-                    if key == "created_at" or key == "updated_at":
-                        value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                if key == "created_at" or key == "updated_at":
+                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
                 if key != "__class__":
                     setattr(self, key, value)
 
@@ -42,19 +39,18 @@ class BaseModel:
         from models import storage
         self.updated_at = datetime.now()
         storage.new(self)
-        models.storage.save()
+        storage.save()
 
     def to_dict(self):
-        """Return dict representation of the instance with additional
-        attributes and iso formatted date-time"""
-        dict_rep = vars(self)
-        dict_rep["__class__"] = self.__class__.__name__
-        for key, value in dict_rep.copy().items():
-            if key == "updated_at" or key == "created_at":
-                dict_rep[key] = value.isoformat(timespec="microseconds")
-            if key == '_sa_instance_state':
-                del(dict_rep['_sa_instance_state'])
-        return dict_rep
+        """Convert instance into dict format"""
+        dictionary = {}
+        dictionary.update(self.__dict__)
+        dictionary.update({'__class__':
+                          (str(type(self)).split('.')[-1]).split('\'')[0]})
+        dictionary['created_at'] = self.created_at.isoformat()
+        dictionary['updated_at'] = self.updated_at.isoformat()
+        my_dict.pop("_sa_instance_state", None)
+        return dictionary
     
     def delete(self):
         """Delete the current instance from storage."""

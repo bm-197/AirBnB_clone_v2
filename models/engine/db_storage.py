@@ -28,39 +28,25 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
     
     def all(self, cls=None):
-        """Query the table on the current database session"""
-        objs = []
-
+        """Query the table on the currenct database session"""
         if cls is None:
-            classes_to_query = [State, City]
-            for class_to_query in classes_to_query:
-                objs.extend(self.__session.query(class_to_query).all())
+            obj = self.__session.query(State).all()
+            objs.extend(self.__session.query(City).all())
+            objs.extend(self.__session.query(User).all())
+            objs.extend(self.__session.query(Place).all())
+            objs.extend(self.__session.query(Review).all())
+            objs.extend(self.__session.query(Amenity).all())
         else:
-            objs = self.__session.query(cls).all()
-
-        # Exclude '_sa_instance_state' from the dictionaries
-        result = {
-            "{}.{}".format(type(o).__name__, o.id): {
-                key: value for key, value in o.__dict__.items() if key != '_sa_instance_state'
-            } for o in objs
-        }
-
-        return result
+            objs = self.__session.query(cls)
+        return {"{}.{}".format(type(o).__name__, o.id): o for o in objs}
     
     def new(self, obj):
-        '''adds the obj to the current db session'''
-        if obj is not None:
-            try:
-                self.__session.add(obj)
-                self.__session.flush()
-                self.__session.refresh(obj)
-            except Exception as ex:
-                self.__session.rollback()
-                raise ex
+        """add the object to the current database session"""
+        self.__session.add(obj)
     
     def save(self, obj=None):
         """Commit all changes of the current database session."""
-        self.__session.commit()
+        self.__session.commit(obj)
     
     def delete(self, obj=None):
         """Delete obj from the current database session."""
