@@ -141,9 +141,6 @@ class HBNBCommand(cmd.Cmd):
             if kwargs == {}:
                 obj = eval(my_list[0])()
             else:
-                if os.getenv('HBNB_TYPE_STORAGE') == 'db':
-                    if not hasattr(kwargs, 'id'):
-                        kwargs['id'] = str(uuid.uuid4())
                 obj = HBNBCommand.classes[my_list[0]](**kwargs)
             obj.save()
             print(obj.id)
