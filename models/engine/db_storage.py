@@ -32,7 +32,7 @@ class DBStorage:
         objs = []
 
         if cls is None:
-            classes_to_query = [State, City, User, Place]
+            classes_to_query = [State, City, User, Place, Review, Amenity]
             for class_to_query in classes_to_query:
                 objs.extend(self.__session.query(class_to_query).all())
         else:
