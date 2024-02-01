@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
-"""
-starts a Flask web application
-"""
+"""Create cities by cities route for the flask app"""
 
 
 from flask import Flask, render_template
