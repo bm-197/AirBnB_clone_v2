@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HBNB States</title>
+    </head>
+    <body>
+        <H1>States</H1>
+        <UL>
+            {% for values in states_list.values() %}
+            <LI>{{ values['id'] }}: <B>{{ values['name'] }}</B></LI>
+        {% endfor %}
+        </UL>
+
+    </body>
+</html>
