@@ -1,6 +1,7 @@
 #!/usr/bin/python3
-
-"""Flask Script to fetch all states from database"""
+"""
+starts a Flask web application
+"""
 
 
 from flask import Flask, render_template
@@ -23,4 +24,4 @@ def states_list():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port="5000")
