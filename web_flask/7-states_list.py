@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 """Flask Script to fetch all states from database"""
 
 
@@ -10,6 +11,7 @@ app = Flask(__name__)
 
 @app.teardown_appcontext
 def teardown_db(exception):
+    """Close database connection after the request"""
     storage.close()
 
 
