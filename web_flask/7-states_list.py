@@ -1,12 +1,10 @@
 #!/usr/bin/python3
-"""Flask Script to fetch all states from database
-"""
+"""Flask Script to fetch all states from database"""
 
 
 from flask import Flask, render_template
 from models import storage
 from models.state import State
-from operator import itemgetter
 
 app = Flask(__name__)
 
